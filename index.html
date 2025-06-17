@@ -142,46 +142,13 @@
       `;
     });
 
-    function calculateDose() {
-      const weight = parseFloat(document.getElementById("weight").value);
-      const selectedDrug = document.getElementById("drug").value;
-      const resultDiv = document.getElementById("result");
+      function calculateDose() {
+      var weight = parseFloat(document.getElementById("weight").value);
+      var med = document.getElementById("medication").value;
 
-      if (!weight || weight <= 0 || !selectedDrug) {
-        resultDiv.style.display = "block";
-        resultDiv.innerHTML = "❌ الرجاء إدخال وزن صحيح واختيار دواء.";
+      if (isNaN(weight) || weight <= 0) {
+     document.getElementById("result").innerHTML = "❌ أدخل وزنًا صحيحًا";
         return;
-      }
-
-      const drug = drugs.find(d => d.scientific === selectedDrug);
-      let message = `✅ الجرعة المحسوبة لـ ${drug.scientific}:\n${drug.dose}\nملاحظات: ${drug.note}`;
-      message = message.replace(/\n/g, "<br>");
-      resultDiv.innerHTML = message;
-      resultDiv.style.display = "block";
-    }
-
-    function sendViaWhatsApp() {
-      const weight = document.getElementById("weight").value;
-      const selectedDrug = document.getElementById("drug").value;
-      const drug = drugs.find(d => d.scientific === selectedDrug);
-
-      if (!weight || !selectedDrug || !drug) {
-        alert("❌ الرجاء تعبئة الوزن واختيار دواء");
-        return;
-      }
-
-      const message = `🚼 وزن الطفل: ${weight} كجم\n💊 الدواء: ${drug.scientific}\n🧪 الجرعة: ${drug.dose}\n📝 ملاحظات: ${drug.note}`;
-      const encoded = encodeURIComponent(message);
-      window.open(`https://wa.me/?text=${encoded}`, "_blank");
-    }
-  </script>
-          function calculateDose() {
-            var weight = parseFloat(document.getElementById("weight").value);
-            var med = document.getElementById("medication").value;
-
-            if (isNaN(weight) || weight <= 0) {
-                document.getElementById("result").innerHTML = "❌ أدخل وزنًا صحيحًا";
-                return;
             }
 
             let doseText = "";
@@ -223,8 +190,9 @@
                 doseText = `الجرعة: من ${min.toFixed(2)} إلى ${max.toFixed(2)} ملغ كل 8 ساعات. الحد الأقصى اليومي: 2 ملغ/كغ.`;
             }
 
-            document.getElementById("result").innerHTML = "<strong>📋 النتيجة:</strong><br>" + doseText;
+  document.getElementById("result").innerHTML = "<strong>📋 النتيجة:</strong><br>" + doseText;
         }
+  </script>
 </body>
 </html>
 <footer style="margin-top: 40px; text-align: center; font-size: 14px; color: #666;">
