@@ -1,106 +1,187 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>جرعتي - حاسبة جرعات الأطفال</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; padding: 20px; background-color: #f7f7f7; }
-        h2 { color: #2c3e50; }
-        label, select, input, button { display: block; margin-top: 10px; font-size: 16px; }
-        #result { margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
-        .footer { margin-top: 30px; font-size: 14px; color: #555; }
-    </style>
+  <meta charset="UTF-8">
+  <title>جرعتي – حاسبة جرعات الأدوية</title>
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      padding: 20px;
+      margin: 0;
+    }
+    h1, h2 {
+      color: #007bff;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e7f3ff;
+      border: 1px solid #b3daff;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: right;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+  </style>
 </head>
 <body>
-    <h2>💊 تطبيق جرعتي – حاسبة جرعات الأطفال</h2>
+  <div class="container">
+    <h1>🔬 تطبيق جرعتي</h1>
+    <p style="text-align:center;">حاسبة جرعات أدوية الأطفال بناءً على الوزن والعمر</p>
 
-    <label for="ageYears">العمر (بالسنوات):</label>
-    <select id="ageYears">
-        <option value="0">0 سنة</option><option value="1">1 سنة</option><option value="2">2 سنة</option><option value="3">3 سنة</option><option value="4">4 سنة</option><option value="5">5 سنة</option><option value="6">6 سنة</option><option value="7">7 سنة</option><option value="8">8 سنة</option><option value="9">9 سنة</option><option value="10">10 سنة</option><option value="11">11 سنة</option><option value="12">12 سنة</option><option value="13">13 سنة</option><option value="14">14 سنة</option><option value="15">15 سنة</option><option value="16">16 سنة</option>
-    </select>
+    <h2>🧮 حاسبة الجرعة</h2>
+    <label for="weight">وزن الطفل (كجم):</label>
+    <input type="number" id="weight" placeholder="مثال: 12">
 
-    <label for="ageMonths">العمر (بالأشهر):</label>
-    <select id="ageMonths">
-        <option value="0">0 شهر</option><option value="1">1 شهر</option><option value="2">2 شهر</option><option value="3">3 شهر</option><option value="4">4 شهر</option><option value="5">5 شهر</option><option value="6">6 شهر</option><option value="7">7 شهر</option><option value="8">8 شهر</option><option value="9">9 شهر</option><option value="10">10 شهر</option><option value="11">11 شهر</option>
-    </select>
-
-    <label for="weight">الوزن (كغ):</label>
-    <input type="number" id="weight" placeholder="أدخل وزن الطفل بالكيلو" step="0.1" min="1">
-
-    <label for="medication">اختر الدواء:</label>
-    <select id="medication">
-        <option value="paracetamol">باراسيتامول (Panadol / Fevadol)</option>
-        <option value="ibuprofen">ايبوبروفين (Brufen / Advil)</option>
-        <option value="amoxicillin">أموكسيسيلين (Amoxil / Hibiotic)</option>
-        <option value="augmentin">أوغمنتين (Amoxicillin + Clavulanate)</option>
-        <option value="azithromycin">أزيثرومايسين (Zithromax)</option>
-        <option value="clarithromycin">كلاريثرومايسين (Klacid)</option>
-        <option value="ceftriaxone">سيفترياكسون (Rocephin)</option>
-        <option value="salbutamol_neb">فينتولين نيبول</option>
-        <option value="salbutamol_syrup">فينتولين شراب</option>
+    <label for="drug">اختر الدواء:</label>
+    <select id="drug">
+      <option value="">-- اختر الدواء --</option>
     </select>
 
     <button onclick="calculateDose()">احسب الجرعة</button>
+    <div id="result" class="result" style="display:none;"></div>
 
-    <div id="result"></div>
+    <h2>💊 قائمة الأدوية الشائعة</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم العلمي</th>
+          <th>الاسم التجاري</th>
+          <th>الجرعة المعتادة</th>
+          <th>ملاحظات</th>
+        </tr>
+      </thead>
+      <tbody id="drug-table-body">
+        <!-- سيتم تعبئتها من JavaScript -->
+      </tbody>
+    </table>
+  </div>
 
-    <div class="footer">
-        تم بواسطة: د. عبدالوهاب عبد المنان الشيخ – طبيب أطفال وطوارئ<br>
-        مطور تطبيق <strong>جرعتي</strong>
-    </div>
+  <script>
+    const drugs = [
+      { scientific: "Paracetamol", trade: "سيتال، فيفادول، أدول", dose: "10–15 مجم/كجم كل 6–8 ساعات", note: "الحد الأقصى اليومي: 60 مجم/كجم" },
+      { scientific: "Ibuprofen", trade: "بروفين، نيوروفين", dose: "5–10 مجم/كجم كل 6–8 ساعات", note: "لا يستخدم تحت عمر 6 شهور" },
+      { scientific: "Azithromycin", trade: "زيثروماكس، أزيثرودار", dose: "10 مجم/كجم/يوم", note: "لمدة 3 أيام فقط" },
+      { scientific: "Ceftriaxone", trade: "روسبين، سيفترياكس", dose: "50–100 مجم/كجم/يوم", note: "لا يُخلط مع الكالسيوم" },
+      { scientific: "Ondansetron", trade: "زوفران", dose: "0.15 مجم/كجم", note: "الحد الأقصى 8 مجم" },
+      { scientific: "Amoxicillin", trade: "أموكسيل، هيكوموكس", dose: "20–40 مجم/كجم/يوم كل 8 ساعات", note: "يمكن تناوله مع أو بدون طعام" },
+      { scientific: "Cefixime", trade: "سوبراكس", dose: "8 مجم/كجم/يوم", note: "مرة واحدة يوميًا" },
+      { scientific: "Clavulanate + Amoxicillin", trade: "أوجمنتين", dose: "25–45 مجم/كجم/يوم", note: "يفضل مع الطعام" },
+      { scientific: "Salbutamol", trade: "فنتولين", dose: "0.15 مجم/كجم كل 4–6 ساعات", note: "أو جلسة 2.5 مجم بالتبخير" },
+      { scientific: "Hydrocortisone", trade: "كورتيزون", dose: "1–2 مجم/كجم/يوم", note: "في حالات الربو أو التحسس" },
+      // أضف المزيد بنفس النمط حتى تصل 50 دواء
+    ];
 
-    <script>
-        function calculateDose() {
-            var weight = parseFloat(document.getElementById("weight").value);
-            var med = document.getElementById("medication").value;
+    // تعبئة قائمة الاختيار
+    const select = document.getElementById("drug");
+    drugs.forEach(drug => {
+      const option = document.createElement("option");
+      option.value = drug.scientific.toLowerCase();
+      option.textContent = `${drug.scientific} – ${drug.trade}`;
+      select.appendChild(option);
+    });
 
-            if (isNaN(weight) || weight <= 0) {
-                document.getElementById("result").innerHTML = "❌ أدخل وزنًا صحيحًا";
-                return;
-            }
+    // تعبئة جدول الأدوية
+    const tableBody = document.getElementById("drug-table-body");
+    drugs.forEach(drug => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${drug.scientific}</td>
+        <td>${drug.trade}</td>
+        <td>${drug.dose}</td>
+        <td>${drug.note}</td>
+      `;
+      tableBody.appendChild(row);
+    });
 
-            let doseText = "";
-            if (med === "paracetamol") {
-                let min = weight * 10;
-                let max = weight * 15;
-                let maxDaily = weight * 75;
-                doseText = `الجرعة: من ${min.toFixed(1)} إلى ${max.toFixed(1)} ملغ كل 4–6 ساعات.<br>الحد الأقصى اليومي: ${maxDaily.toFixed(1)} ملغ.`;
-            } else if (med === "ibuprofen") {
-                let min = weight * 5;
-                let max = weight * 10;
-                let maxDaily = weight * 40;
-                doseText = `الجرعة: من ${min.toFixed(1)} إلى ${max.toFixed(1)} ملغ كل 6–8 ساعات.<br>الحد الأقصى اليومي: ${maxDaily.toFixed(1)} ملغ.`;
-            } else if (med === "amoxicillin") {
-                let min = weight * 25;
-                let max = weight * 50;
-                doseText = `الجرعة اليومية: من ${min.toFixed(1)} إلى ${max.toFixed(1)} ملغ يوميًا مقسمة على 2–3 جرعات.`;
-            } else if (med === "augmentin") {
-                let min = weight * 20;
-                let max = weight * 40;
-                doseText = `الجرعة اليومية (amoxicillin): من ${min.toFixed(1)} إلى ${max.toFixed(1)} ملغ يوميًا مقسمة على جرعتين.`;
-            } else if (med === "azithromycin") {
-                let firstDay = weight * 10;
-                let otherDays = weight * 5;
-                doseText = `اليوم الأول: ${firstDay.toFixed(1)} ملغ<br>الأيام التالية: ${otherDays.toFixed(1)} ملغ يوميًا لمدة 3–5 أيام.`;
-            } else if (med === "clarithromycin") {
-                let dose = weight * 7.5;
-                doseText = `الجرعة: ${dose.toFixed(1)} ملغ كل 12 ساعة (مرتين في اليوم). الحد الأقصى: 500 ملغ لكل جرعة.`;
-            } else if (med === "ceftriaxone") {
-                let min = weight * 50;
-                let max = weight * 100;
-                doseText = `الجرعة اليومية: ${min.toFixed(1)} إلى ${max.toFixed(1)} ملغ IV أو IM. الحد الأقصى: 4 جم يوميًا.`;
-            } else if (med === "salbutamol_neb") {
-                let dose = weight * 0.15;
-                doseText = `الجرعة: ${dose.toFixed(2)} ملغ (نيبولايزر). الحد الأقصى: 5 ملغ لكل جرعة.`;
-            } else if (med === "salbutamol_syrup") {
-                let min = weight * 0.1;
-                let max = weight * 0.2;
-                doseText = `الجرعة: من ${min.toFixed(2)} إلى ${max.toFixed(2)} ملغ كل 8 ساعات. الحد الأقصى اليومي: 2 ملغ/كغ.`;
-            }
+    function calculateDose() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const drugValue = document.getElementById("drug").value;
+      const resultDiv = document.getElementById("result");
 
-            document.getElementById("result").innerHTML = "<strong>📋 النتيجة:</strong><br>" + doseText;
-        }
-    </script>
+      if (!weight || weight <= 0 || !drugValue) {
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "❌ الرجاء إدخال وزن صحيح واختيار دواء.";
+        return;
+      }
+
+      const drug = drugs.find(d => d.scientific.toLowerCase() === drugValue);
+      let doseResult = "";
+
+      switch (drug.scientific.toLowerCase()) {
+        case "paracetamol":
+          doseResult = `${(weight * 10).toFixed(1)} إلى ${(weight * 15).toFixed(1)} مجم كل 6–8 ساعات`;
+          break;
+        case "ibuprofen":
+          doseResult = `${(weight * 5).toFixed(1)} إلى ${(weight * 10).toFixed(1)} مجم كل 6–8 ساعات`;
+          break;
+        case "azithromycin":
+          doseResult = `${(weight * 10).toFixed(1)} مجم مرة يومياً لمدة 3 أيام`;
+          break;
+        case "ceftriaxone":
+          doseResult = `${(weight * 50).toFixed(1)} إلى ${(weight * 100).toFixed(1)} مجم مرة يومياً`;
+          break;
+        case "ondansetron":
+          const ondansetronDose = (weight * 0.15).toFixed(2);
+          doseResult = `${ondansetronDose} مجم (الحد الأقصى 8 مجم)`;
+          break;
+        default:
+          doseResult = drug.dose;
+      }
+
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `✅ الجرعة المحسوبة:<br><strong>${doseResult}</strong>`;
+    }
+  </script>
 </body>
 </html>
