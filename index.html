@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مدير المصروفات</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 40px;
+      direction: rtl;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 8px;
+      margin: 5px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>مدير المصروفات</h1>
+  <input type="number" id="amount" placeholder="المبلغ">
+  <input type="text" id="note" placeholder="ملاحظة (اختياري)">
+  <button onclick="addExpense()">إضافة</button>
+
+  <h3 id="monthlyTotal" style="text-align: center; margin-top: 20px;">📅 إجمالي المصروفات لهذا الشهر: 0 ريال</h3>
+
+  <canvas id="expenseChart" width="400" height="200"></canvas>
+
+  <table>
+    <thead>
+      <tr>
+        <th>التاريخ والوقت</th>
+        <th>المبلغ</th>
+        <th>الملاحظة</th>
+      </tr>
+    </thead>
+    <tbody id="expenseTableBody"></tbody>
+  </table>
+
+  <script src="script.js"></script>
+</body>
+</html>
