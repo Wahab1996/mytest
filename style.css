@@ -1,0 +1,46 @@
+body {
+  font-family: sans-serif;
+  direction: rtl;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+input, button {
+  padding: 10px;
+  font-size: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+button {
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  margin-top: 10px;
+}
+button:hover {
+  background-color: #45a049;
+}
+canvas {
+  margin-top: 30px;
+}
