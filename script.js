@@ -28,6 +28,7 @@ form.onsubmit = function (e) {
   saveExpenses(expenses);
   addExpenseToTable(expense);
   updateChart(expenses);
+  updateMonthlyTotal(expenses);
 
   form.reset();
 };
@@ -36,6 +37,7 @@ window.onload = function () {
   const expenses = getExpenses();
   expenses.forEach(addExpenseToTable);
   updateChart(expenses);
+  updateMonthlyTotal(expenses);
 };
 
 function printExpenses() {
@@ -46,6 +48,7 @@ function printExpenses() {
 let chart;
 
 function updateChart(expenses) {
+  updateMonthlyTotal(expenses);
   const dailyTotals = {};
 
   expenses.forEach(exp => {
@@ -106,4 +109,20 @@ function printReport() {
     win.print();
     win.close();
   }, 500);
+}
+function updateMonthlyTotal(expenses) {
+  const now = new Date();
+  const currentMonth = now.getMonth(); // من 0 إلى 11
+  const currentYear = now.getFullYear();
+
+  const total = expenses.reduce((sum, exp) => {
+    const expDate = new Date(exp.datetime);
+    if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
+      return sum + exp.amount;
+    }
+    return sum;
+  }, 0);
+
+  document.getElementById('monthlyTotal').textContent =
+    `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
 }
