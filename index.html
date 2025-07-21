@@ -6,33 +6,26 @@
   <title>مدير المصروفات</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printable, #printable * {
-        visibility: visible;
-      }
-      #printable {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
-  </style>
 </head>
 <body>
   <div class="container">
     <h1>تسجيل المصاريف</h1>
+
     <form id="expenseForm">
       <input type="number" id="amount" placeholder="المبلغ" required>
       <input type="text" id="note" placeholder="الملاحظة" required>
       <button type="submit">إضافة</button>
     </form>
 
-    <div id="printable">
+    <!-- ✅ المجموع الشهري -->
+    <div id="monthlyTotal">📅 إجمالي المصروفات لهذا الشهر: 0 ريال</div>
+
+    <!-- ✅ الجزء الذي سيتم طباعته فقط -->
+    <div class="print-section">
+      <!-- 🎯 الرسم البياني -->
+      <canvas id="expensesChart" width="400" height="200"></canvas>
+
+      <!-- 📋 جدول المصروفات -->
       <table id="expensesTable">
         <thead>
           <tr>
@@ -44,13 +37,13 @@
         <tbody></tbody>
       </table>
 
-      <h3 id="monthlyTotal">📅 إجمالي المصروفات لهذا الشهر: 0 ريال</h3>
-
-      <canvas id="expensesChart" width="400" height="200"></canvas>
+      <!-- ✅ نفس الإجمالي يظهر أيضاً في الطباعة -->
+      <div id="monthlyTotalPrint" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
     </div>
 
-    <button onclick="printReport()">🖨️ طباعة التقرير</button>
+    <button onclick="printExpenses()">🖨️ طباعة التقرير</button>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
