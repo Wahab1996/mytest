@@ -14,21 +14,38 @@ function addExpenseToTable({ datetime, amount, note }) {
   row.innerHTML = `<td>${datetime}</td><td>${amount}</td><td>${note}</td>`;
 }
 
+function updateMonthlyTotal(expenses) {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const total = expenses.reduce((sum, exp) => {
+    const expDate = new Date(exp.datetime);
+    if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
+      return sum + exp.amount;
+    }
+    return sum;
+  }, 0);
+
+  document.getElementById('monthlyTotal').textContent =
+    `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
+}
+
 form.onsubmit = function (e) {
   e.preventDefault();
-  const amount = document.getElementById('amount').value;
+  const amount = parseFloat(document.getElementById('amount').value);
   const note = document.getElementById('note').value;
 
   const now = new Date();
-  const datetime = now.toLocaleString('ar-SA'); // تاريخ ووقت
+  const datetime = now.toLocaleString('en-GB'); // dd/mm/yyyy, hh:mm:ss
 
-  const expense = { datetime, amount: parseFloat(amount), note };
+  const expense = { datetime, amount, note };
   const expenses = getExpenses();
   expenses.push(expense);
   saveExpenses(expenses);
   addExpenseToTable(expense);
-  updateChart(expenses);
   updateMonthlyTotal(expenses);
+  updateChart(expenses);
 
   form.reset();
 };
@@ -36,23 +53,17 @@ form.onsubmit = function (e) {
 window.onload = function () {
   const expenses = getExpenses();
   expenses.forEach(addExpenseToTable);
-  updateChart(expenses);
   updateMonthlyTotal(expenses);
+  updateChart(expenses);
 };
 
-function printExpenses() {
-  window.print();
-}
-
-// 🎯 رسم بياني للمصاريف اليومية فقط حسب التاريخ
 let chart;
 
 function updateChart(expenses) {
-  updateMonthlyTotal(expenses);
   const dailyTotals = {};
 
   expenses.forEach(exp => {
-    const date = exp.datetime.split(",")[0]; // نأخذ التاريخ فقط من التاريخ والوقت
+    const date = exp.datetime.split(",")[0]; // التاريخ فقط
     if (!dailyTotals[date]) dailyTotals[date] = 0;
     dailyTotals[date] += exp.amount;
   });
@@ -86,43 +97,8 @@ function updateChart(expenses) {
     }
   });
 }
+
+// ✅ طباعة التقرير (رسم + جدول + الإجمالي فقط)
 function printReport() {
-  const content = document.getElementById('printable').innerHTML;
-  const style = `
-    <style>
-      body { font-family: Arial; padding: 20px; }
-      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-      th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-      canvas { max-width: 100% !important; margin-bottom: 20px; }
-      h3 { text-align: center; }
-    </style>
-  `;
-  const win = window.open('', '', 'height=800,width=800');
-  win.document.write('<html><head><title>تقرير المصروفات</title>');
-  win.document.write(style);
-  win.document.write('</head><body>');
-  win.document.write(content);
-  win.document.write('</body></html>');
-  win.document.close();
-  win.focus();
-  setTimeout(() => {
-    win.print();
-    win.close();
-  }, 500);
-}
-function updateMonthlyTotal(expenses) {
-  const now = new Date();
-  const currentMonth = now.getMonth(); // من 0 إلى 11
-  const currentYear = now.getFullYear();
-
-  const total = expenses.reduce((sum, exp) => {
-    const expDate = new Date(exp.datetime);
-    if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
-      return sum + exp.amount;
-    }
-    return sum;
-  }, 0);
-
-  document.getElementById('monthlyTotal').textContent =
-    `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
+  window.print();
 }
