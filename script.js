@@ -1,117 +1,85 @@
-function getTodayHijri() {
-  const now = new Date();
-  return now.toLocaleString('ar-SA-u-ca-islamic', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-}
-
-function loadExpenses() {
-  return JSON.parse(localStorage.getItem("expenses") || "[]");
-}
+const form = document.getElementById('expenseForm');
+const table = document.getElementById('expensesTable').querySelector('tbody');
 
 function saveExpenses(expenses) {
-  localStorage.setItem("expenses", JSON.stringify(expenses));
+  localStorage.setItem('expenses', JSON.stringify(expenses));
 }
 
-function addExpense() {
-  const amount = parseFloat(document.getElementById("amount").value);
-  const note = document.getElementById("note").value;
-  if (!amount) return alert("الرجاء إدخال مبلغ صحيح");
+function getExpenses() {
+  return JSON.parse(localStorage.getItem('expenses')) || [];
+}
 
-  const expenses = loadExpenses();
-  expenses.push({
-    amount,
-    note,
-    datetime: new Date().toISOString(),
-    displayDate: new Date().toLocaleString('ar-EG', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    })
-  });
+function addExpenseToTable({ datetime, amount, note }) {
+  const row = table.insertRow();
+  row.innerHTML = `<td>${datetime}</td><td>${amount}</td><td>${note}</td>`;
+}
+
+form.onsubmit = function (e) {
+  e.preventDefault();
+  const amount = document.getElementById('amount').value;
+  const note = document.getElementById('note').value;
+
+  const now = new Date();
+  const datetime = now.toLocaleString('ar-SA'); // تاريخ ووقت
+
+  const expense = { datetime, amount: parseFloat(amount), note };
+  const expenses = getExpenses();
+  expenses.push(expense);
   saveExpenses(expenses);
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  renderTable(expenses);
+  addExpenseToTable(expense);
   updateChart(expenses);
-  updateMonthlyTotal(expenses);
+
+  form.reset();
+};
+
+window.onload = function () {
+  const expenses = getExpenses();
+  expenses.forEach(addExpenseToTable);
+  updateChart(expenses);
+};
+
+function printExpenses() {
+  window.print();
 }
 
-function renderTable(expenses) {
-  const tbody = document.getElementById("expenseTableBody");
-  tbody.innerHTML = "";
-  expenses.forEach(exp => {
-    const row = `<tr>
-      <td>${exp.displayDate}</td>
-      <td>${exp.amount}</td>
-      <td>${exp.note || ""}</td>
-    </tr>`;
-    tbody.innerHTML += row;
-  });
-}
+// 🎯 رسم بياني للمصاريف اليومية فقط حسب التاريخ
+let chart;
 
 function updateChart(expenses) {
-  const totalsByDate = {};
+  const dailyTotals = {};
+
   expenses.forEach(exp => {
-    const date = exp.hijriDate.split(',')[0];
-    if (!totalsByDate[date]) totalsByDate[date] = 0;
-    totalsByDate[date] += exp.amount;
+    const date = exp.datetime.split(",")[0]; // نأخذ التاريخ فقط من التاريخ والوقت
+    if (!dailyTotals[date]) dailyTotals[date] = 0;
+    dailyTotals[date] += exp.amount;
   });
 
-  const labels = Object.keys(totalsByDate);
-  const data = Object.values(totalsByDate);
+  const labels = Object.keys(dailyTotals);
+  const data = Object.values(dailyTotals);
 
-  if (window.expenseChart) window.expenseChart.destroy();
+  const ctx = document.getElementById('expensesChart').getContext('2d');
 
-  const ctx = document.getElementById('expenseChart').getContext('2d');
-  window.expenseChart = new Chart(ctx, {
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels,
+      labels: labels,
       datasets: [{
-        label: 'مجموع المصروفات بالريال',
-        data,
-        backgroundColor: '#4CAF50'
+        label: 'إجمالي المصروفات اليومية',
+        data: data,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
       }]
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: true }
+      scales: {
+        y: {
+          beginAtZero: true
+        }
       }
     }
   });
 }
-
-function updateMonthlyTotal(expenses) {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const total = expenses.reduce((sum, exp) => {
-    const expDate = new Date(exp.datetime);
-    if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
-      return sum + exp.amount;
-    }
-    return sum;
-  }, 0);
-
-  document.getElementById('monthlyTotal').textContent =
-    `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const expenses = loadExpenses();
-  renderTable(expenses);
-  updateChart(expenses);
-  updateMonthlyTotal(expenses);
-});
