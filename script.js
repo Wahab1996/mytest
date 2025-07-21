@@ -83,3 +83,27 @@ function updateChart(expenses) {
     }
   });
 }
+function printReport() {
+  const content = document.getElementById('printable').innerHTML;
+  const style = `
+    <style>
+      body { font-family: Arial; padding: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+      canvas { max-width: 100% !important; margin-bottom: 20px; }
+      h3 { text-align: center; }
+    </style>
+  `;
+  const win = window.open('', '', 'height=800,width=800');
+  win.document.write('<html><head><title>تقرير المصروفات</title>');
+  win.document.write(style);
+  win.document.write('</head><body>');
+  win.document.write(content);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(() => {
+    win.print();
+    win.close();
+  }, 500);
+}
