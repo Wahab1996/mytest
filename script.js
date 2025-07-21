@@ -9,9 +9,19 @@ function getExpenses() {
   return JSON.parse(localStorage.getItem('expenses')) || [];
 }
 
+function formatDateTime(date) {
+  return date.toLocaleString('ar-EG', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 function addExpenseToTable({ datetime, amount, note }) {
   const row = table.insertRow();
-  row.innerHTML = `<td>${datetime}</td><td>${amount}</td><td>${note}</td>`;
+  row.innerHTML = `<td>${datetime}</td><td>${amount.toFixed(2)}</td><td>${note}</td>`;
 }
 
 function updateMonthlyTotal(expenses) {
@@ -20,32 +30,38 @@ function updateMonthlyTotal(expenses) {
   const currentYear = now.getFullYear();
 
   const total = expenses.reduce((sum, exp) => {
-    const expDate = new Date(exp.datetime);
+    const expDate = new Date(exp.timestamp);
     if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
       return sum + exp.amount;
     }
     return sum;
   }, 0);
 
-  document.getElementById('monthlyTotal').textContent =
-    `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
+  const totalText = `📅 إجمالي المصروفات لهذا الشهر: ${total.toFixed(2)} ريال`;
+  document.getElementById('monthlyTotal').textContent = totalText;
+  document.getElementById('monthlyTotalPrint').textContent = totalText;
 }
 
 form.onsubmit = function (e) {
   e.preventDefault();
   const amount = parseFloat(document.getElementById('amount').value);
   const note = document.getElementById('note').value;
-
   const now = new Date();
-  const datetime = now.toLocaleString('en-GB'); // dd/mm/yyyy, hh:mm:ss
 
-  const expense = { datetime, amount, note };
+  const datetime = formatDateTime(now);
+  const expense = {
+    datetime,
+    timestamp: now.toISOString(),
+    amount,
+    note
+  };
+
   const expenses = getExpenses();
   expenses.push(expense);
   saveExpenses(expenses);
   addExpenseToTable(expense);
-  updateMonthlyTotal(expenses);
   updateChart(expenses);
+  updateMonthlyTotal(expenses);
 
   form.reset();
 };
@@ -53,9 +69,26 @@ form.onsubmit = function (e) {
 window.onload = function () {
   const expenses = getExpenses();
   expenses.forEach(addExpenseToTable);
-  updateMonthlyTotal(expenses);
   updateChart(expenses);
+  updateMonthlyTotal(expenses);
 };
+
+function printExpenses() {
+  const style = document.createElement('style');
+  style.innerHTML = `
+    body * { visibility: hidden; }
+    .print-section, .print-section * { visibility: visible; }
+    .print-section {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 90%;
+    }
+  `;
+  document.head.appendChild(style);
+  window.print();
+  document.head.removeChild(style);
+}
 
 let chart;
 
@@ -63,7 +96,7 @@ function updateChart(expenses) {
   const dailyTotals = {};
 
   expenses.forEach(exp => {
-    const date = exp.datetime.split(",")[0]; // التاريخ فقط
+    const date = exp.datetime.split(",")[0];
     if (!dailyTotals[date]) dailyTotals[date] = 0;
     dailyTotals[date] += exp.amount;
   });
@@ -90,15 +123,8 @@ function updateChart(expenses) {
     options: {
       responsive: true,
       scales: {
-        y: {
-          beginAtZero: true
-        }
+        y: { beginAtZero: true }
       }
     }
   });
-}
-
-// ✅ طباعة التقرير (رسم + جدول + الإجمالي فقط)
-function printReport() {
-  window.print();
 }
